@@ -12,5 +12,14 @@
       <param-name>useFileMappedBuffer</param-name>
       <param-value>false</param-value>
     </init-param>
+    <init-param>
+      <param-name>resourceBase</param-name>
+      <param-value>./src/main/webapp/src</param-value>
+    </init-param>
   </servlet>
+  
+  <!-- 设置默认欢迎页 -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 </web-app>
