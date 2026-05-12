@@ -13,6 +13,7 @@
   <artifactId>docs-web</artifactId>
   <packaging>war</packaging>
   <name>Docs Web</name>
+  <description>Main web application module packaging REST APIs and frontend assets.</description>
 
   <dependencies>
     <!-- Dependencies to Docs -->

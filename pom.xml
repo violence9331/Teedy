@@ -60,6 +60,8 @@
     <org.apache.maven.plugins.maven-jar-plugin.version>3.3.0</org.apache.maven.plugins.maven-jar-plugin.version>
     <org.apache.maven.plugins.maven-war-plugin.version>3.3.2</org.apache.maven.plugins.maven-war-plugin.version>
     <org.apache.maven.plugins.maven-surefire-plugin.version>3.0.0</org.apache.maven.plugins.maven-surefire-plugin.version>
+    <org.apache.maven.plugins.maven-site-plugin.version>3.21.0</org.apache.maven.plugins.maven-site-plugin.version>
+    <org.apache.maven.plugins.maven-pmd-plugin.version>3.22.0</org.apache.maven.plugins.maven-pmd-plugin.version>
     <org.eclipse.jetty.jetty-maven-plugin.version>11.0.20</org.eclipse.jetty.jetty-maven-plugin.version>
   </properties>
 
@@ -69,6 +71,13 @@
     <url>scm:git:https://github.com/sismics/docs.git</url>
     <tag>HEAD</tag>
   </scm>
+
+  <distributionManagement>
+    <site>
+      <id>local-site</id>
+      <url>file://${project.build.directory}/staging</url>
+    </site>
+  </distributionManagement>
 
   <repositories>
     <repository>
@@ -87,6 +96,72 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>${org.apache.maven.plugins.maven-antrun-plugin.version}</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-pmd-plugin.version}</version>
+        <configuration>
+          <targetJdk>${maven.compiler.target}</targetJdk>
+          <rulesets>
+            <ruleset>${maven.multiModuleProjectDirectory}/customize-rules.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <executions>
+          <execution>
+            <id>pmd-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>pmd</goal>
+              <goal>cpd</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>pmd-quality-gate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+              <goal>cpd-check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      
+      <plugin> 
+        <groupId>org.apache.maven.plugins</groupId> 
+        <artifactId>maven-surefire-plugin</artifactId> 
+        <version>3.0.0</version> 
+        <!-- <configuration> 
+          <includes>  
+            <include>Sample.java</include> 
+          </includes> 
+          <excludes> 
+            <exclude>**/TestCircle.java</exclude> 
+            <exclude>**/TestSquare.java</exclude> 
+          </excludes> 
+        </configuration>  -->
+      </plugin> 
+      
+      <plugin> 
+        <groupId>org.jacoco</groupId> 
+        <artifactId>jacoco-maven-plugin</artifactId> 
+        <version>0.8.9</version> 
+        <executions> 
+          <execution>   
+            <goals> 
+              <goal>prepare-agent</goal> 
+              </goals> 
+          </execution>
+          <execution> 
+        <id>report</id> 
+        <phase>test</phase> 
+        <goals> 
+        <goal>report</goal> 
+        </goals> 
+        </execution> 
+        </executions> 
       </plugin>
 
       <plugin>
@@ -112,12 +187,51 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-site-plugin.version}</version>
+      </plugin>
+
+      <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
         <version>${org.eclipse.jetty.jetty-maven-plugin.version}</version>
       </plugin>
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${org.apache.maven.plugins.maven-pmd-plugin.version}</version>
+        <configuration>
+          <targetJdk>${maven.compiler.target}</targetJdk>
+          <rulesets>
+            <ruleset>${maven.multiModuleProjectDirectory}/customize-rules.xml</ruleset>
+          </rulesets>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>pmd</report>
+              <report>cpd</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>aggregate-reports</id>
+            <inherited>false</inherited>
+            <reports>
+              <report>aggregate-pmd</report>
+              
+              <report>aggregate-cpd</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <modules>
     <module>docs-core</module>
@@ -131,6 +245,12 @@
         <groupId>com.sismics.docs</groupId>
         <artifactId>docs-core</artifactId>
         <version>${project.version}</version>
+      </dependency>
+    
+      <dependency> 
+        <groupId>org.junit.jupiter</groupId> 
+        <artifactId>junit-jupiter</artifactId> 
+        <version>5.7.1</version> 
       </dependency>
 
       <dependency>

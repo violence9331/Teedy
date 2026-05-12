@@ -13,6 +13,7 @@
   <artifactId>docs-web-common</artifactId>
   <packaging>jar</packaging>
   <name>Docs Web Commons</name>
+  <description>Shared web layer utilities, security helpers, and API support components.</description>
 
   <dependencies>
     <!-- Dependencies to Docs -->
