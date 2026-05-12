@@ -99,7 +99,7 @@
         <configuration>
           <targetJdk>${maven.compiler.target}</targetJdk>
           <rulesets>
-            <ruleset>target/pmd/rulesets/001-customize-rules.xml</ruleset>
+            <ruleset>${maven.multiModuleProjectDirectory}/customize-rules.xml</ruleset>
           </rulesets>
         </configuration>
         <executions>
@@ -122,22 +122,6 @@
         </executions>
       </plugin>
 
-      
-      <plugin> 
-        <groupId>org.apache.maven.plugins</groupId> 
-        <artifactId>maven-surefire-plugin</artifactId> 
-        <version>3.0.0</version> 
-        <!-- <configuration> 
-          <includes>  
-            <include>Sample.java</include> 
-          </includes> 
-          <excludes> 
-            <exclude>**/TestCircle.java</exclude> 
-            <exclude>**/TestSquare.java</exclude> 
-          </excludes> 
-        </configuration>  -->
-      </plugin> 
-      
       <plugin> 
         <groupId>org.jacoco</groupId> 
         <artifactId>jacoco-maven-plugin</artifactId> 
