@@ -88,39 +88,33 @@ pipeline {
 		}
 
 		stage('Upload image') {
-			steps {
-				script {
-					sh '''
-                        mkdir -p ~/.docker
-                        cat > ~/.docker/config.json << 'EOF'
-                        {
-                            "auths": {
-                                "https://index.docker.io/v1/": {}
-                            },
-                            "HttpHeaders": {
-                                "User-Agent": "Docker-Client/19.03.12"
-                            }
-                        }
-                        EOF
+            steps {
+                script {
+                    // 1. 先测试网络连接
+                    sh '''
+                        echo "测试 Docker Hub 连接..."
+                        curl -I https://registry.hub.docker.com/v2/ || true
                     '''
                     
-                    // 然后登录
+                    // 2. 使用完整的 Docker Hub URL
                     withDockerRegistry([credentialsId: 'DOCKER_HUB_CREDENTIALS', url: 'https://index.docker.io/v1/']) {
                         sh '''
-                            # 使用国内镜像源登录
-                            docker login --username=$DOCKER_HUB_CREDENTIALS_USR \
-                                        --password-stdin \
-                                        registry.cn-hangzhou.aliyuncs.com <<< "$DOCKER_HUB_CREDENTIALS_PSW"
+                            # 登录 Docker Hub
+                            echo "$DOCKER_HUB_CREDENTIALS_PSW" | docker login \
+                                -u "$DOCKER_HUB_CREDENTIALS_USR" \
+                                --password-stdin
                             
-                            # 构建和推送镜像
-                            docker build -t your-image:tag .
-                            docker tag your-image:tag registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image:tag
-                            docker push registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image:tag
+                            # 推送镜像
+                            docker tag violence9331/teedy-app:33 violence9331/teedy-app:latest
+                            docker push violence9331/teedy-app:33
+                            docker push violence9331/teedy-app:latest
+                            
+                            echo "✅ 镜像推送成功"
                         '''
                     }
-				}
-			}
-		}
+                }
+            }
+        }
 
 		stage('Run containers') {
 			steps {
