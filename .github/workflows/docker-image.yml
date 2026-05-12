@@ -20,16 +20,21 @@ jobs:
           cache: maven
       
       - name: Install test dependencies
-        run: sudo apt-get update && sudo apt-get -y -q --no-install-recommends install ffmpeg mediainfo tesseract-ocr tesseract-ocr-deu
-      
-      - name: Build with Maven
-        run: mvn --batch-mode -Pprod clean install
-      
-      - name: Upload war artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-web-ci.war
-          path: docs-web/target/docs*.war
+        run: |
+          sudo apt-get update
+          sudo apt-get -y -q --no-install-recommends install \
+            ffmpeg \
+            mediainfo \
+            tesseract-ocr \
+            tesseract-ocr-deu   
+            - name: Build with Maven
+              run: mvn --batch-mode -Pprod clean install
+            
+            - name: Upload war artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: docs-web-ci.war
+                path: docs-web/target/docs*.war
   
   build_docker_image:
     name: Publish to Docker Hub
