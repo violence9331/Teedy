@@ -64,7 +64,7 @@ jobs:
         id: metadata
         uses: docker/metadata-action@v3
         with:
-          images: xx/Teedy # Docker Hub repository
+          images: violence9331/Teedy # Docker Hub repository
           flavor: |
             latest=false
           tags: |
