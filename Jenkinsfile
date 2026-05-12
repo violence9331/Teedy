@@ -90,13 +90,34 @@ pipeline {
 		stage('Upload image') {
 			steps {
 				script {
-					// sign in Docker Hub
-					docker.withRegistry('https://registry.hub.docker.com', 'DOCKER_HUB_CREDENTIALS') {
-						// push image
-						docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
-						// optional: label latest
-						docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
-					}
+					sh '''
+                        mkdir -p ~/.docker
+                        cat > ~/.docker/config.json << 'EOF'
+                        {
+                            "auths": {
+                                "https://index.docker.io/v1/": {}
+                            },
+                            "HttpHeaders": {
+                                "User-Agent": "Docker-Client/19.03.12"
+                            }
+                        }
+                        EOF
+                    '''
+                    
+                    // 然后登录
+                    withDockerRegistry([credentialsId: 'DOCKER_HUB_CREDENTIALS', url: 'https://index.docker.io/v1/']) {
+                        sh '''
+                            # 使用国内镜像源登录
+                            docker login --username=$DOCKER_HUB_CREDENTIALS_USR \
+                                        --password-stdin \
+                                        registry.cn-hangzhou.aliyuncs.com <<< "$DOCKER_HUB_CREDENTIALS_PSW"
+                            
+                            # 构建和推送镜像
+                            docker build -t your-image:tag .
+                            docker tag your-image:tag registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image:tag
+                            docker push registry.cn-hangzhou.aliyuncs.com/your-namespace/your-image:tag
+                        '''
+                    }
 				}
 			}
 		}
