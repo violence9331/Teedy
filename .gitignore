@@ -18,5 +18,6 @@ docs/*
 !docs/.gitkeep
 /data/
 *.db
+/target/
 #macos
 .DS_Store

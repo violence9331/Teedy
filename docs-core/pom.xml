@@ -13,6 +13,7 @@
   <artifactId>docs-core</artifactId>
   <packaging>jar</packaging>
   <name>Docs Core</name>
+  <description>Core services, domain model, persistence, search, and document processing engine.</description>
 
   <dependencies>
     <!-- Persistence layer dependencies -->
